@@ -1,0 +1,31 @@
+---
+- name: ARTACK | Check for cachetool phar
+  stat:
+    path: "{{ artack_cachetool_path }}"
+  register: cachetool_file
+
+- name: ARTACK | Run composer self-update
+  command: "{{ artack_cachetool_php_binary }} {{ artack_cachetool_path }} selfupdate --no-interaction"
+  when: cachetool_file.stat.exists and artack_cachetool_self_update
+  register: cachetool_self_update_result
+  changed_when: cachetool_self_update_result.stderr is search('Updating')
+  ignore_errors: yes
+
+- name: ARTACK | Install cachetool
+  get_url:
+    url: https://gordalina.github.io/cachetool/downloads/cachetool.phar
+    dest: "{{ artack_cachetool_path }}"
+    mode: 0755
+    force: no
+
+- name: ARTACK | Clear opcache
+  command: "{{ artack_cachetool_php_binary }} {{ artack_cachetool_path }} opcache:reset --web --web-path={{ artack_cachetool_web_path }} --web-url={{ artack_cachetool_web_url }} -v"
+  when: artack_cachetool_type == 'web'
+  register: cachetool_reset_result
+  changed_when: cachetool_reset_result.stdout is search('opcache_reset')
+
+#- name: ARTACK | Clear opcache
+#  command: "{{ artack_cachetool_php_binary }} {{ artack_cachetool_path }} opcache:reset --web --web-path={{ artack_cachetool_web_path }} --web-url={{ artack_cachetool_web_url }}"
+#  when: artack_cachetool_type == 'fcgi'
+#  register: cachetool_reset_result
+#  changed_when: cachetool_reset_result.stderr is search('Name')
