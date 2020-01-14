@@ -6,11 +6,11 @@
     # Variables used by artack customizations
     artack_php_binary: "/path/to/php"
     artack_run_opcache_clear: false
+    artack_run_htpasswd: false
+    artack_run_cyon_php_version: false
 
-    # Variables uses for git
     git_default_branch: master
 
-    # Variables used by cachetool
     artack_cachetool_self_update: true
     artack_cachetool_php_binary: "{{ artack_php_binary }}"
     artack_cachetool_path: "{{ ansistrano_deploy_to }}/cachetool.phar"
@@ -18,6 +18,14 @@
     artack_cachetool_fcgi_path: "/path/to/fcgi/socket"
     artack_cachetool_web_path: "{{ ansistrano_deploy_to }}/current/public"
     artack_cachetool_web_url: http://www.example.com
+
+    artack_htpasswd_name: ARTACK development
+    artack_htpasswd_user: artack
+    artack_htpasswd_pass: artack
+    artack_htpasswd_path: "{{ ansistrano_deploy_to }}/current/public/.htaccess"
+
+    artack_cyon_php_version: 74 # chose from 71, 72, 73 and 74
+    artack_cyon_php_version_htaccess_path: "{{ ansistrano_deploy_to }}/current"
 
     # Variables uses by symfony
     symfony_php_path: "{{ artack_php_binary }}"
