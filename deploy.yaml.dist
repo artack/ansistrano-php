@@ -38,7 +38,7 @@
 
     # Variables used in the Git deployment strategy
     ansistrano_deploy_via: "git"
-    ansistrano_git_repo: git@github.com:USERNAME/REPO.git
+    ansistrano_git_repo: ssh://git@github.com:USERNAME/REPO.git
     ansistrano_git_branch: "{{ git_branch | default(git_default_branch) }}"
 
     # Variables related to the project shared files/folders
