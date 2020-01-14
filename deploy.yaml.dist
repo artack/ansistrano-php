@@ -22,10 +22,10 @@
     artack_htpasswd_name: ARTACK development
     artack_htpasswd_user: artack
     artack_htpasswd_pass: artack
-    artack_htpasswd_path: "{{ ansistrano_deploy_to }}/current/public/.htaccess"
+    artack_htpasswd_path: "{{ ansistrano_release_path.stdout }}/public/.htaccess"
 
     artack_cyon_php_version: 74 # chose from 71, 72, 73 and 74
-    artack_cyon_php_version_htaccess_path: "{{ ansistrano_deploy_to }}/current"
+    artack_cyon_php_version_htaccess_path: "{{ ansistrano_release_path.stdout }}"
 
     # Variables uses by symfony
     symfony_php_path: "{{ artack_php_binary }}"
