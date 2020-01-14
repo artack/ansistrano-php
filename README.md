@@ -24,10 +24,10 @@ cp deployment/rollback.yaml.dist deploy.yaml
 Multistage ist also possible when copy the deploy.yaml.dist and rollback.yaml.dist multiple times, e.g.:
 
 ```bash
-cp deployment/deploy.yaml.dist deploy_prod.yaml.dist
-cp deployment/deploy.yaml.dist deploy_stag.yaml.dist
-cp deployment/rollback.yaml.dist rollback_prod.yaml.dist
-cp deployment/rollback.yaml.dist rollback_stag.yaml.dist
+cp deployment/deploy.yaml.dist deploy_prod.yaml
+cp deployment/deploy.yaml.dist deploy_stag.yaml
+cp deployment/rollback.yaml.dist rollback_prod.yaml
+cp deployment/rollback.yaml.dist rollback_stag.yaml
 ```
 
 ### Modify your copied files - these are YOURS
