@@ -18,7 +18,7 @@ git submodule add https://github.com/artack/ansistrano-php.git deployment
 cp deployment/ansible.cfg.dist ansible.cfg
 cp deployment/hosts.yaml.dist hosts.yaml
 cp deployment/deploy.yaml.dist deploy.yaml
-cp deployment/rollback.yaml.dist deploy.yaml
+cp deployment/rollback.yaml.dist rollback.yaml
 ```
 
 Multistage ist also possible when copy the deploy.yaml.dist and rollback.yaml.dist multiple times, e.g.:
