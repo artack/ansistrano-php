@@ -1,0 +1,23 @@
+---
+- name: ARTACK | sentry | get deploy time start
+  set_fact:
+    artack_sentry_deploy_time_start: "{{ lookup('pipe', 'date +%s') }}"
+  run_once: true
+  delegate_to: 127.0.0.1
+
+- name: ARTACK | sentry | check existance of the release
+  command: "sentry-cli releases info {{ artack_sentry_release }} -q"
+  register: artack_sentry_release_info
+  failed_when: "'error' in artack_sentry_release_info.stderr"
+  run_once: true
+  delegate_to: 127.0.0.1
+
+- name: ARTACK | sentry | set existance of the release
+  set_fact:
+    artack_sentry_release_existing: "{{ artack_sentry_release_info.rc == 0 }}"
+
+- name: ARTACK | sentry | create release
+  command: "sentry-cli releases new -p {{ artack_sentry_project }} {{ artack_sentry_release }}"
+  when: not artack_sentry_release_existing
+  run_once: true
+  delegate_to: 127.0.0.1

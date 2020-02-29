@@ -1,3 +1,0 @@
----
-- include_tasks: "steps/opcache_clear.yml"
-  when: artack_run_opcache_clear

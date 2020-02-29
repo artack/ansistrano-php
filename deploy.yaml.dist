@@ -5,11 +5,19 @@
 
     # Variables used by artack customizations
     artack_php_binary: "/path/to/php"
+    artack_run_sentry: true
     artack_run_opcache_clear: false
     artack_run_htpasswd: false
     artack_run_cyon_php_version: false
 
     git_default_branch: master
+
+    artack_sentry_organization: artack-weblab-gmbh
+    artack_sentry_project: suissetec-metaapp
+    artack_sentry_bitbucket_project: SUISSETEC
+    artack_sentry_bitbucket_repo: metaapp
+    artack_sentry_repo: "{{ artack_sentry_bitbucket_project }}/{{ artack_sentry_bitbucket_repo }}"
+    artack_sentry_environment: prod
 
     artack_cachetool_self_update: true
     artack_cachetool_php_binary: "{{ artack_php_binary }}"
@@ -81,6 +89,10 @@
       prompt: "Enter a branch to deploy"
       default: "{{ git_default_branch }}"
       private: no
+    - name: artack_sentry_release
+      prompt: "Enter a sentry release (usualy the git tag, eg. 1.3.8)"
+      private: no
+      when: artack_run_sentry
 
   # used for deployment on cyon
 #  environment:

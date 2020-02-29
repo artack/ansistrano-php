@@ -1,0 +1,6 @@
+---
+- include_tasks: "steps/sentry_02.yaml"
+  when: artack_run_sentry
+
+- include_tasks: "steps/opcache_clear.yaml"
+  when: artack_run_opcache_clear
