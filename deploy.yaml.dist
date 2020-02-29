@@ -13,9 +13,9 @@
     git_default_branch: master
 
     artack_sentry_organization: artack-weblab-gmbh
-    artack_sentry_project: suissetec-metaapp
-    artack_sentry_bitbucket_project: SUISSETEC
-    artack_sentry_bitbucket_repo: metaapp
+    artack_sentry_project: project-slug
+    artack_sentry_bitbucket_project: PROJECT
+    artack_sentry_bitbucket_repo: repo-name
     artack_sentry_repo: "{{ artack_sentry_bitbucket_project }}/{{ artack_sentry_bitbucket_repo }}"
     artack_sentry_environment: prod
 
