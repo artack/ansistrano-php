@@ -18,14 +18,12 @@
     mode: 0755
     force: no
 
-- name: ARTACK | Clear opcache
+- name: ARTACK | Clear opcache (web)
   command: "{{ artack_cachetool_php_binary }} {{ artack_cachetool_path }} opcache:reset --web --web-path={{ artack_cachetool_web_path }} --web-url={{ artack_cachetool_web_url }} -v"
   when: artack_cachetool_type == 'web'
   register: cachetool_reset_result
-  changed_when: cachetool_reset_result.stdout is search('opcache_reset')
 
-#- name: ARTACK | Clear opcache
-#  command: "{{ artack_cachetool_php_binary }} {{ artack_cachetool_path }} opcache:reset --web --web-path={{ artack_cachetool_web_path }} --web-url={{ artack_cachetool_web_url }}"
-#  when: artack_cachetool_type == 'fcgi'
-#  register: cachetool_reset_result
-#  changed_when: cachetool_reset_result.stderr is search('Name')
+- name: ARTACK | Clear opcache (fcgi)
+  command: "{{ artack_cachetool_php_binary }} {{ artack_cachetool_path }} opcache:reset --fcgi={{ artack_cachetool_fcgi_path }}"
+  when: artack_cachetool_type == 'fcgi'
+  register: cachetool_reset_result
