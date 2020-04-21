@@ -4,7 +4,7 @@
     path: "{{ artack_cachetool_path }}"
   register: cachetool_file
 
-- name: ARTACK | Run composer self-update
+- name: ARTACK | Run cachetool self-update
   command: "{{ artack_cachetool_php_binary }} {{ artack_cachetool_path }} selfupdate --no-interaction"
   when: cachetool_file.stat.exists and artack_cachetool_self_update
   register: cachetool_self_update_result

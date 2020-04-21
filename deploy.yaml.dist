@@ -8,6 +8,7 @@
     artack_run_opcache_clear: false
     artack_run_htpasswd: false
     artack_run_cyon_php_version: false
+    artack_run_contao3: false
 
     git_default_branch: master
 
@@ -72,8 +73,9 @@
 #    ansistrano_before_cleanup_tasks_file: "{{ playbook_dir }}/<your-deployment-config>/my-before-cleanup-tasks.yml"
 #    ansistrano_after_cleanup_tasks_file: "{{ playbook_dir }}/<your-deployment-config>/my-after-cleanup-tasks.yml"
 
-    ansistrano_before_symlink_tasks_file: "{{ playbook_dir }}/deployment/hooks/before_symlink.yml"
-    ansistrano_after_symlink_tasks_file: "{{ playbook_dir }}/deployment/hooks/after_symlink.yml"
+    ansistrano_before_symlink_tasks_file: "{{ playbook_dir }}/deployment/hooks/before_symlink.yaml"
+    ansistrano_after_symlink_tasks_file: "{{ playbook_dir }}/deployment/hooks/after_symlink.yaml"
+    ansistrano_symfony_after_composer_tasks_file: "{{ playbook_dir }}/deployment/hooks/symfony_after_composer.yaml"
 
   # used to ask for the branch to be deployed
   vars_prompt:
