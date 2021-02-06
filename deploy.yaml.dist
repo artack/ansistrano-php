@@ -5,6 +5,7 @@
 
     # Variables used by artack customizations
     artack_php_binary: "/path/to/php"
+    artack_run_messenger_consumers_reload: false
     artack_run_opcache_clear: false
     artack_run_htpasswd: false
     artack_run_cyon_php_version: false
@@ -30,6 +31,7 @@
 
     # Variables uses by symfony
     symfony_php_path: "{{ artack_php_binary }}"
+    symfony_console_path: 'bin/console'
     symfony_run_composer: true
     symfony_run_assets_install: false
     symfony_run_assetic_dump: false

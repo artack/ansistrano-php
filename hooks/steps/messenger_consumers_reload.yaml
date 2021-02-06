@@ -1,0 +1,4 @@
+---
+- name: ARTACK | MESSENGER CONSUMERS | reload
+  shell: chdir={{ansistrano_previous_path}}
+    {{symfony_php_path}} {{ansistrano_previous_path}}/{{symfony_console_path}} messenger:stop-workers

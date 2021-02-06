@@ -1,3 +1,5 @@
 ---
 - include_tasks: "steps/opcache_clear.yaml"
   when: artack_run_opcache_clear
+- include_tasks: "steps/messenger_consumers_reload.yaml"
+  when: artack_run_messenger_consumers_reload

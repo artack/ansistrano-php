@@ -1,0 +1,9 @@
+---
+- name: ARTACK | STAT current directory
+  stat:
+    path: "{{ ansistrano_deploy_to }}/{{ ansistrano_current_dir }}"
+  register: stat_current_directory
+
+- name: ARTACK | SET FACT previous directory
+  set_fact:
+    ansistrano_previous_path: "{{ stat_current_directory.stat.lnk_source }}"
