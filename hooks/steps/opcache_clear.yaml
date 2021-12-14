@@ -11,12 +11,21 @@
   changed_when: cachetool_self_update_result.stderr is search('Updating')
   ignore_errors: yes
 
-- name: ARTACK | Install cachetool
+- name: ARTACK | Install cachetool (latest)
   get_url:
-    url: https://gordalina.github.io/cachetool/downloads/cachetool.phar
+    url: "https://github.com/gordalina/cachetool/releases/latest/download/cachetool.phar"
     dest: "{{ artack_cachetool_path }}"
     mode: 0755
     force: no
+  when: artack_cachetool_version == "latest"
+
+- name: ARTACK | Install cachetool (specific version)
+  get_url:
+    url: "https://github.com/gordalina/cachetool/releases/download/{{ artack_cachetool_version }}/cachetool.phar"
+    dest: "{{ artack_cachetool_path }}"
+    mode: 0755
+    force: no
+  when: artack_cachetool_version != "latest"
 
 - name: ARTACK | Clear opcache (web)
   command: "{{ artack_cachetool_php_binary }} {{ artack_cachetool_path }} opcache:reset --web --web-path={{ artack_cachetool_web_path }} --web-url={{ artack_cachetool_web_url }} -v"

@@ -13,7 +13,8 @@
 
     git_default_branch: master
 
-    artack_cachetool_self_update: true
+    artack_cachetool_version: latest #or a specific version - e.g. 8.0.2
+    artack_cachetool_self_update: false
     artack_cachetool_php_binary: "{{ artack_php_binary }}"
     artack_cachetool_path: "{{ ansistrano_deploy_to }}/cachetool.phar"
     artack_cachetool_type: tbc # use one of: web, fcgi
