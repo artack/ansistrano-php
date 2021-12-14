@@ -10,6 +10,7 @@
     artack_run_htpasswd: false
     artack_run_cyon_php_version: false
     artack_run_contao3: false
+    artack_run_presta_sitemap_dump: false
 
     git_default_branch: master
 
