@@ -23,6 +23,8 @@
     artack_cachetool_web_path: "{{ ansistrano_deploy_to }}/current/public"
     artack_cachetool_web_url: http://www.example.com
 
+    artack_messenger_use_env: false
+
     artack_htpasswd_name: ARTACK development
     artack_htpasswd_user: artack
     artack_htpasswd_pass: artack

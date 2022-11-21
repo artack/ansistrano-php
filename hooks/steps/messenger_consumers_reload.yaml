@@ -1,4 +1,12 @@
 ---
-- name: ARTACK | MESSENGER CONSUMERS | reload
-  shell: chdir={{ansistrano_previous_path}}
-    {{symfony_php_path}} {{ansistrano_previous_path}}/{{symfony_console_path}} messenger:stop-workers
+- name: ARTACK | MESSENGER CONSUMERS | reload (w/o env)
+  shell:
+    chdir: "{{ansistrano_previous_path}}"
+    cmd: "{{symfony_php_path}} {{ansistrano_previous_path}}/{{symfony_console_path}} messenger:stop-workers"
+  when: artack_messenger_use_env is false
+
+- name: ARTACK | MESSENGER CONSUMERS | reload (with env)
+  shell:
+    chdir: "{{ansistrano_previous_path}}"
+    cmd: ". $HOME/env.sh ; {{symfony_php_path}} {{ansistrano_previous_path}}/{{symfony_console_path}} messenger:stop-workers"
+  when: artack_messenger_use_env is true
