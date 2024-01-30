@@ -5,5 +5,11 @@
 - include_tasks: "steps/cyon_php_version.yaml"
   when: artack_run_cyon_php_version
 
+- include_tasks: "steps/importmap_install.yaml"
+  when: artack_run_importmap_install
+
+- include_tasks: "steps/assetmap_compile.yaml"
+  when: artack_run_assetmap_compile
+
 - include_tasks: "steps/opcache_clear.yaml"
   when: artack_run_opcache_clear

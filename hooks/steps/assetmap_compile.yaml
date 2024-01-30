@@ -1,0 +1,5 @@
+---
+- name: ARTACK | asset-map compile
+  shell:
+    chdir: "{{ansistrano_release_path.stdout}}"
+    cmd: SYMFONY_ENV={{symfony_env}} APP_ENV={{symfony_env}} {{symfony_php_path}} {{symfony_console_path}} asset-map:compile
