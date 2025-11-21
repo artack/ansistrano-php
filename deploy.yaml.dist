@@ -15,6 +15,7 @@
     artack_run_assetmap_compile: false
 
     git_default_branch: main
+    current_git_branch: "{{ lookup('pipe', 'cd ' ~ (playbook_dir | quote) ~ ' && git rev-parse --abbrev-ref HEAD') | default('stag', true) }}"
 
     artack_cachetool_version: latest #or a specific version - e.g. 8.0.2
     artack_cachetool_self_update: false
@@ -89,7 +90,7 @@
   vars_prompt:
     - name: git_branch
       prompt: "Enter a branch to deploy"
-      default: "{{ git_default_branch }}"
+      default: "{{ current_git_branch }}"
       private: no
 
   # used for deployment on cyon
