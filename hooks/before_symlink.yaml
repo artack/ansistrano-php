@@ -8,6 +8,9 @@
 - include_tasks: "steps/importmap_install.yaml"
   when: artack_run_importmap_install
 
+- include_tasks: "steps/tailwind_build.yaml"
+  when: artack_run_tailwind_build
+
 - include_tasks: "steps/assetmap_compile.yaml"
   when: artack_run_assetmap_compile
 

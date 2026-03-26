@@ -12,6 +12,7 @@
     artack_run_contao3: false
     artack_run_presta_sitemap_dump: false
     artack_run_importmap_install: false
+    artack_run_tailwind_build: false
     artack_run_assetmap_compile: false
 
     # Determine the current git branch to propose as default during deployment
