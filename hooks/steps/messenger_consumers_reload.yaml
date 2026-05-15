@@ -1,12 +1,19 @@
 ---
-- name: ARTACK | MESSENGER CONSUMERS | reload (w/o env)
-  shell:
-    chdir: "{{ansistrano_previous_path}}"
-    cmd: "{{symfony_php_path}} {{ansistrano_previous_path}}/{{symfony_console_path}} messenger:stop-workers"
-  when: artack_messenger_use_env is false
+- block:
+    - name: ARTACK | MESSENGER CONSUMERS | reload (w/o env)
+      shell:
+        chdir: "{{ansistrano_previous_path}}"
+        cmd: "{{symfony_php_path}} {{ansistrano_previous_path}}/{{symfony_console_path}} messenger:stop-workers"
+      when: artack_messenger_use_env is false
 
-- name: ARTACK | MESSENGER CONSUMERS | reload (with env)
-  shell:
-    chdir: "{{ansistrano_previous_path}}"
-    cmd: ". $HOME/env.sh ; {{symfony_php_path}} {{ansistrano_previous_path}}/{{symfony_console_path}} messenger:stop-workers"
-  when: artack_messenger_use_env is true
+    - name: ARTACK | MESSENGER CONSUMERS | reload (with env)
+      shell:
+        chdir: "{{ansistrano_previous_path}}"
+        cmd: ". $HOME/env.sh ; {{symfony_php_path}} {{ansistrano_previous_path}}/{{symfony_console_path}} messenger:stop-workers"
+      when: artack_messenger_use_env is true
+  when: ansistrano_previous_path | default('', true) | length > 0
+
+- name: ARTACK | MESSENGER CONSUMERS | skip (no previous release)
+  debug:
+    msg: "No previous release found, skipping messenger:stop-workers."
+  when: ansistrano_previous_path | default('', true) | length == 0
