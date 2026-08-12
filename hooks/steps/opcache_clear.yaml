@@ -11,13 +11,20 @@
   changed_when: cachetool_self_update_result.stderr is search('Updating')
   ignore_errors: yes
 
+# Skip the download entirely when the phar is already on the server: even with
+# force:no, get_url still sends a conditional request to the URL — and the
+# GitHub release edge closes connections for ansible's default user agent
+# ("Remote end closed connection without response"). http_agent covers the
+# genuine first-install case. Trade-off: bumping artack_cachetool_version does
+# not re-download while a phar exists — remove it on the server to upgrade.
 - name: ARTACK | Install cachetool (latest)
   get_url:
     url: "https://github.com/gordalina/cachetool/releases/latest/download/cachetool.phar"
     dest: "{{ artack_cachetool_path }}"
     mode: 0755
     force: no
-  when: artack_cachetool_version == "latest"
+    http_agent: "curl/8"
+  when: artack_cachetool_version == "latest" and not cachetool_file.stat.exists
 
 - name: ARTACK | Install cachetool (specific version)
   get_url:
@@ -25,7 +32,8 @@
     dest: "{{ artack_cachetool_path }}"
     mode: 0755
     force: no
-  when: artack_cachetool_version != "latest"
+    http_agent: "curl/8"
+  when: artack_cachetool_version != "latest" and not cachetool_file.stat.exists
 
 - name: ARTACK | Clear opcache (web)
   command: "{{ artack_cachetool_php_binary }} {{ artack_cachetool_path }} opcache:reset --web --web-path={{ artack_cachetool_web_path }} --web-url={{ artack_cachetool_web_url }} -v"
