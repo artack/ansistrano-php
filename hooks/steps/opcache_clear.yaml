@@ -1,39 +1,44 @@
 ---
-- name: ARTACK | Check for cachetool phar
-  stat:
-    path: "{{ artack_cachetool_path }}"
-  register: cachetool_file
+# The nine managed server ships its own cachetool wrapper (nine-php-cachetool),
+# so the phar is only needed for the web and fcgi variants.
+- name: ARTACK | Provide cachetool phar
+  when: artack_cachetool_type in ['web', 'fcgi']
+  block:
+    - name: ARTACK | Check for cachetool phar
+      stat:
+        path: "{{ artack_cachetool_path }}"
+      register: cachetool_file
 
-- name: ARTACK | Run cachetool self-update
-  command: "{{ artack_cachetool_php_binary }} {{ artack_cachetool_path }} selfupdate --no-interaction"
-  when: cachetool_file.stat.exists and artack_cachetool_self_update
-  register: cachetool_self_update_result
-  changed_when: cachetool_self_update_result.stderr is search('Updating')
-  ignore_errors: yes
+    - name: ARTACK | Run cachetool self-update
+      command: "{{ artack_cachetool_php_binary }} {{ artack_cachetool_path }} selfupdate --no-interaction"
+      when: cachetool_file.stat.exists and artack_cachetool_self_update
+      register: cachetool_self_update_result
+      changed_when: cachetool_self_update_result.stderr is search('Updating')
+      ignore_errors: yes
 
-# Skip the download entirely when the phar is already on the server: even with
-# force:no, get_url still sends a conditional request to the URL — and the
-# GitHub release edge closes connections for ansible's default user agent
-# ("Remote end closed connection without response"). http_agent covers the
-# genuine first-install case. Trade-off: bumping artack_cachetool_version does
-# not re-download while a phar exists — remove it on the server to upgrade.
-- name: ARTACK | Install cachetool (latest)
-  get_url:
-    url: "https://github.com/gordalina/cachetool/releases/latest/download/cachetool.phar"
-    dest: "{{ artack_cachetool_path }}"
-    mode: 0755
-    force: no
-    http_agent: "curl/8"
-  when: artack_cachetool_version == "latest" and not cachetool_file.stat.exists
+    # Skip the download entirely when the phar is already on the server: even with
+    # force:no, get_url still sends a conditional request to the URL — and the
+    # GitHub release edge closes connections for ansible's default user agent
+    # ("Remote end closed connection without response"). http_agent covers the
+    # genuine first-install case. Trade-off: bumping artack_cachetool_version does
+    # not re-download while a phar exists — remove it on the server to upgrade.
+    - name: ARTACK | Install cachetool (latest)
+      get_url:
+        url: "https://github.com/gordalina/cachetool/releases/latest/download/cachetool.phar"
+        dest: "{{ artack_cachetool_path }}"
+        mode: 0755
+        force: no
+        http_agent: "curl/8"
+      when: artack_cachetool_version == "latest" and not cachetool_file.stat.exists
 
-- name: ARTACK | Install cachetool (specific version)
-  get_url:
-    url: "https://github.com/gordalina/cachetool/releases/download/{{ artack_cachetool_version }}/cachetool.phar"
-    dest: "{{ artack_cachetool_path }}"
-    mode: 0755
-    force: no
-    http_agent: "curl/8"
-  when: artack_cachetool_version != "latest" and not cachetool_file.stat.exists
+    - name: ARTACK | Install cachetool (specific version)
+      get_url:
+        url: "https://github.com/gordalina/cachetool/releases/download/{{ artack_cachetool_version }}/cachetool.phar"
+        dest: "{{ artack_cachetool_path }}"
+        mode: 0755
+        force: no
+        http_agent: "curl/8"
+      when: artack_cachetool_version != "latest" and not cachetool_file.stat.exists
 
 - name: ARTACK | Clear opcache (web)
   command: "{{ artack_cachetool_php_binary }} {{ artack_cachetool_path }} opcache:reset --web --web-path={{ artack_cachetool_web_path }} --web-url={{ artack_cachetool_web_url }} -v"
@@ -43,4 +48,11 @@
 - name: ARTACK | Clear opcache (fcgi)
   command: "{{ artack_cachetool_php_binary }} {{ artack_cachetool_path }} opcache:reset --fcgi={{ artack_cachetool_fcgi_path }}"
   when: artack_cachetool_type == 'fcgi'
+  register: cachetool_reset_result
+
+# https://docs.nine.ch/docs/managed-server-services/webserver/PHP/managed-service-php/
+# Resets the opcache of the deploy user's PHP-FPM pool for the given PHP version.
+- name: ARTACK | Clear opcache (nine)
+  command: "nine-php-cachetool -v {{ artack_cachetool_nine_php_version }} reset"
+  when: artack_cachetool_type == 'nine'
   register: cachetool_reset_result
