@@ -23,10 +23,11 @@
     artack_cachetool_self_update: false
     artack_cachetool_php_binary: "{{ artack_php_binary }}"
     artack_cachetool_path: "{{ ansistrano_deploy_to }}/cachetool.phar"
-    artack_cachetool_type: tbc # use one of: web, fcgi
+    artack_cachetool_type: tbc # use one of: web, fcgi, nine
     artack_cachetool_fcgi_path: "/path/to/fcgi/socket"
     artack_cachetool_web_path: "{{ ansistrano_deploy_to }}/current/public"
     artack_cachetool_web_url: http://www.example.com
+    artack_cachetool_nine_php_version: "8.4" # PHP-FPM version of the site, keep it quoted; list available ones with `nine-php-cachetool` on the server
 
     artack_messenger_use_env: false
 
