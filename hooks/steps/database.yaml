@@ -34,11 +34,18 @@
 - name: ARTACK | DATABASE | stage database
   when: artack_run_stage_database | default(false) | bool
   block:
+    # Only a missing file counts as "nothing recorded" (first deploy, or a release from before this
+    # step). Any other error fails the deploy instead of rebuilding a database whose data should stay.
+    - name: ARTACK | DATABASE | look for the branch of the live release
+      stat:
+        path: "{{ ansistrano_deploy_to }}/{{ ansistrano_current_dir }}/BRANCH"
+      register: artack_database_live_branch_stat
+
     - name: ARTACK | DATABASE | read the branch of the live release
       slurp:
         src: "{{ ansistrano_deploy_to }}/{{ ansistrano_current_dir }}/BRANCH"
       register: artack_database_live_branch_file
-      failed_when: false
+      when: artack_database_live_branch_stat.stat.exists
 
     - name: ARTACK | DATABASE | compare the branches
       set_fact:

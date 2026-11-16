@@ -51,4 +51,6 @@ Pick at most one mode per playbook:
 
   A CI deploy passes the branch as `artack_deploy_branch`, because it deploys the exact commit; by hand the branch entered at the prompt counts. `bin/stage-database` lives in the project and refuses to run unless the server's `APP_STAGE` (set in `~/env.sh`) is one of the stages it may rebuild.
 
+  The step runs it as `sh bin/stage-database [--reset]` in the release root, with `~/env.sh` sourced, `APP_ENV` exported and the playbook's PHP binary in `PHP_BIN`. So the script must work under POSIX `sh` whatever its shebang, and call the console through `${PHP_BIN:-php}` to use the playbook's PHP version. A non-zero exit fails the deployment before the release goes live.
+
 `artack_database_reset=true` fails the deployment unless the playbook sets `artack_run_stage_database: true`.
