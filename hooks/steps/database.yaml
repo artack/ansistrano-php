@@ -1,0 +1,71 @@
+---
+# The database step of a deployment. It runs in the new release before the release goes live, while
+# the old release keeps serving traffic on the database this step changes - so every migration must
+# stay backward compatible with the previous release.
+#
+# The server environment (DATABASE_URL, APP_STAGE, ...) lives in ~/env.sh on artack servers, and a
+# non-interactive shell does not read it, so it is sourced here when it exists. The Symfony role's own
+# migration step (symfony_run_doctrine_migrations) runs without it: keep that one off.
+#
+# Two modes, chosen per playbook:
+# - artack_run_doctrine_migrations: doctrine:migrations:migrate. For prod and every stage whose data stays.
+# - artack_run_stage_database: the project's bin/stage-database, for a stage whose data may be rebuilt
+#   (never prod). Deploying the branch the live release runs only migrates, so testers keep their data.
+#   Another branch, no recorded branch, or artack_database_reset=true runs bin/stage-database --reset,
+#   which rebuilds the database. bin/stage-database itself refuses to run unless the server's APP_STAGE
+#   allows it.
+
+- name: ARTACK | DATABASE | set facts
+  set_fact:
+    # ansistrano.deploy up to 4.3 registers the path (.stdout), 4.4 and later set a plain string
+    artack_database_release_path: "{{ ansistrano_release_path.stdout | default(ansistrano_release_path) }}"
+    artack_database_shell_env: 'if [ -f "$HOME/env.sh" ]; then . "$HOME/env.sh"; fi; export APP_ENV={{ symfony_env | quote }};'
+
+- name: ARTACK | DATABASE | doctrine migrations
+  shell:
+    chdir: "{{ artack_database_release_path }}"
+    cmd: "{{ artack_database_shell_env }} {{ symfony_php_path }} {{ symfony_console_path }} doctrine:migrations:migrate --no-interaction --allow-no-migration"
+  register: artack_database_migrate_result
+  changed_when: >-
+    'Already at the latest version' not in artack_database_migrate_result.stdout
+    and 'No migrations to execute' not in artack_database_migrate_result.stdout
+  when: not (artack_run_stage_database | default(false) | bool)
+
+- name: ARTACK | DATABASE | stage database
+  when: artack_run_stage_database | default(false) | bool
+  block:
+    - name: ARTACK | DATABASE | read the branch of the live release
+      slurp:
+        src: "{{ ansistrano_deploy_to }}/{{ ansistrano_current_dir }}/BRANCH"
+      register: artack_database_live_branch_file
+      failed_when: false
+
+    - name: ARTACK | DATABASE | compare the branches
+      set_fact:
+        # The CI passes the branch as artack_deploy_branch, since it deploys the exact commit (git_branch
+        # is a SHA there). By hand it is the branch entered at the prompt.
+        artack_database_branch: "{{ artack_deploy_branch | default(ansistrano_git_branch, true) }}"
+        artack_database_live_branch: "{{ artack_database_live_branch_file.content | default('') | b64decode | trim }}"
+
+    - name: ARTACK | DATABASE | choose between migrate and rebuild
+      set_fact:
+        artack_database_rebuild: "{{ (artack_database_reset | default(false) | bool) or artack_database_live_branch != artack_database_branch }}"
+
+    - name: ARTACK | DATABASE | report the choice
+      debug:
+        msg: >-
+          {{ 'Rebuilding' if artack_database_rebuild | bool else 'Migrating' }} the database:
+          deploying '{{ artack_database_branch }}', the live release runs '{{ artack_database_live_branch | default('nothing recorded', true) }}'{{ ', reset requested' if artack_database_reset | default(false) | bool else '' }}.
+
+    # Written before the database step: if that fails, this release never goes live, and the next
+    # deploy still compares against the branch of the release that does.
+    - name: ARTACK | DATABASE | record the deployed branch in the release
+      copy:
+        content: "{{ artack_database_branch }}\n"
+        dest: "{{ artack_database_release_path }}/BRANCH"
+        mode: "0644"
+
+    - name: ARTACK | DATABASE | bin/stage-database
+      shell:
+        chdir: "{{ artack_database_release_path }}"
+        cmd: "{{ artack_database_shell_env }} PHP_BIN={{ symfony_php_path | quote }} sh bin/stage-database{{ ' --reset' if artack_database_rebuild | bool else '' }}"

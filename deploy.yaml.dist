@@ -14,6 +14,9 @@
     artack_run_importmap_install: false
     artack_run_tailwind_build: false
     artack_run_assetmap_compile: false
+    # Database step before the release goes live (hooks/steps/database.yaml), pick at most one:
+    artack_run_doctrine_migrations: false # doctrine:migrations:migrate - prod and every stage whose data stays
+    artack_run_stage_database: false # the project's bin/stage-database: migrate, or rebuild on another branch - never prod
 
     # Determine the current git branch to propose as default during deployment
     git_default_branch: main
@@ -46,6 +49,7 @@
     symfony_run_assets_install: false
     symfony_run_assetic_dump: false
     symfony_run_cache_clear_and_warmup: false
+    symfony_run_doctrine_migrations: false # runs without ~/env.sh - artack_run_doctrine_migrations migrates instead
 
     # Variables used for the deployment process
     ansistrano_deploy_from: "{{ playbook_dir }}"
@@ -88,6 +92,7 @@
     ansistrano_before_symlink_tasks_file: "{{ playbook_dir }}/deployment/hooks/before_symlink.yaml"
     ansistrano_after_symlink_tasks_file: "{{ playbook_dir }}/deployment/hooks/after_symlink.yaml"
     ansistrano_symfony_after_composer_tasks_file: "{{ playbook_dir }}/deployment/hooks/symfony_after_composer.yaml"
+    ansistrano_symfony_after_cache_tasks_file: "{{ playbook_dir }}/deployment/hooks/symfony_after_cache.yaml"
 
   # used to ask for the branch to be deployed
   vars_prompt:
