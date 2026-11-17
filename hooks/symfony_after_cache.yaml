@@ -1,0 +1,12 @@
+---
+# Hook ansistrano_symfony_after_cache_tasks_file: runs in the new release after composer and cache,
+# before the release goes live.
+
+- name: ARTACK | DATABASE | a reset needs the stage database
+  assert:
+    that: not (artack_database_reset | default(false) | bool) or (artack_run_stage_database | default(false) | bool)
+    fail_msg: "artack_database_reset=true needs artack_run_stage_database: true in this playbook. This playbook only migrates and never rebuilds a database."
+    quiet: true
+
+- include_tasks: "steps/database.yaml"
+  when: (artack_run_doctrine_migrations | default(false) | bool) or (artack_run_stage_database | default(false) | bool)
